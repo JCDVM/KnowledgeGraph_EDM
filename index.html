@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vitamin E, Selenium, EDM & NAD — Knowledge Graph</title>
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;1,400&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f7f5f0;
+    --surface: #ffffff;
+    --border: rgba(60,52,137,0.12);
+    --border-strong: rgba(60,52,137,0.28);
+    --text-primary: #1a1820;
+    --text-secondary: #5a5670;
+    --text-muted: #9490a8;
+    --purple-fill: #EEEDFE;
+    --purple-stroke: #534AB7;
+    --purple-text: #3C3489;
+    --teal-fill: #E1F5EE;
+    --teal-stroke: #0F6E56;
+    --teal-text: #085041;
+    --coral-fill: #FAECE7;
+    --coral-stroke: #993C1D;
+    --coral-text: #712B13;
+    --amber-fill: #FAEEDA;
+    --amber-stroke: #854F0B;
+    --amber-text: #633806;
+    --blue-fill: #E6F1FB;
+    --blue-stroke: #185FA5;
+    --blue-text: #0C447C;
+    --gray-fill: #F1EFE8;
+    --gray-stroke: #5F5E5A;
+    --gray-text: #444441;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'EB Garamond', Georgia, serif;
+    background: var(--bg);
+    color: var(--text-primary);
+    min-height: 100vh;
+  }
+
+  header {
+    padding: 2.5rem 2.5rem 1.5rem;
+    border-bottom: 0.5px solid var(--border-strong);
+    background: var(--surface);
+  }
+
+  header h1 {
+    font-size: 1.75rem;
+    font-weight: 400;
+    letter-spacing: -0.01em;
+    line-height: 1.2;
+    color: var(--text-primary);
+  }
+
+  header h1 em {
+    font-style: italic;
+    color: var(--purple-text);
+  }
+
+  header p {
+    margin-top: 0.5rem;
+    font-size: 0.95rem;
+    color: var(--text-secondary);
+    font-style: italic;
+    max-width: 640px;
+    line-height: 1.6;
+  }
+
+  header .byline {
+    margin-top: 1rem;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+
+  .main {
+    display: grid;
+    grid-template-columns: 1fr 280px;
+    gap: 0;
+    min-height: calc(100vh - 130px);
+  }
+
+  .graph-area {
+    padding: 1.5rem;
+    position: relative;
+  }
+
+  .controls {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .controls-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text-muted);
+    margin-right: 4px;
+  }
+
+  .filter-btn {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.65rem;
+    padding: 4px 12px;
+    border: 0.5px solid var(--border-strong);
+    border-radius: 20px;
+    background: transparent;
+    cursor: pointer;
+    color: var(--text-secondary);
+    letter-spacing: 0.03em;
+    transition: all 0.15s;
+  }
+
+  .filter-btn:hover { background: var(--purple-fill); color: var(--purple-text); border-color: var(--purple-stroke); }
+  .filter-btn.active { background: var(--purple-stroke); color: #fff; border-color: var(--purple-stroke); }
+
+  canvas {
+    display: block;
+    width: 100%;
+    border: 0.5px solid var(--border);
+    border-radius: 8px;
+    background: var(--surface);
+    cursor: grab;
+  }
+  canvas:active { cursor: grabbing; }
+
+  .canvas-hint {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.62rem;
+    color: var(--text-muted);
+    text-align: center;
+    margin-top: 0.5rem;
+    letter-spacing: 0.03em;
+  }
+
+  .sidebar {
+    border-left: 0.5px solid var(--border-strong);
+    background: var(--surface);
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  .sidebar-section h3 {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text-muted);
+    margin-bottom: 0.75rem;
+  }
+
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 6px;
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+  }
+
+  .legend-dot {
+    width: 11px;
+    height: 11px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  .legend-dash {
+    width: 22px;
+    height: 1px;
+    flex-shrink: 0;
+    position: relative;
+  }
+
+  .legend-dash.dashed { border-top: 1.5px dashed var(--text-muted); }
+  .legend-dash.solid  { border-top: 1.5px solid var(--text-muted); }
+
+  #info-panel {
+    flex: 1;
+  }
+
+  #info-panel h3 {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text-muted);
+    margin-bottom: 0.75rem;
+  }
+
+  #info-content {
+    min-height: 120px;
+    font-size: 0.9rem;
+    line-height: 1.65;
+    color: var(--text-secondary);
+    font-style: italic;
+  }
+
+  #info-content .node-title {
+    font-style: normal;
+    font-weight: 500;
+    font-size: 1rem;
+    color: var(--text-primary);
+    margin-bottom: 0.4rem;
+    display: block;
+  }
+
+  #info-content .node-cat {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.62rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-bottom: 0.6rem;
+    display: block;
+  }
+
+  .info-default {
+    color: var(--text-muted);
+    font-style: italic;
+    font-size: 0.85rem;
+  }
+
+  .related-edges {
+    margin-top: 1rem;
+    font-size: 0.8rem;
+    font-style: normal;
+    color: var(--text-secondary);
+  }
+
+  .related-edges h4 {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.6rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--text-muted);
+    margin-bottom: 0.4rem;
+    font-weight: 400;
+  }
+
+  .edge-item {
+    padding: 3px 0;
+    border-bottom: 0.5px solid var(--border);
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
+  }
+
+  .edge-item:last-child { border-bottom: none; }
+
+  .edge-arrow { color: var(--purple-stroke); font-size: 0.75rem; }
+  .edge-label { color: var(--text-muted); font-size: 0.72rem; font-family: 'DM Mono', monospace; }
+
+  footer {
+    border-top: 0.5px solid var(--border-strong);
+    padding: 1rem 2.5rem;
+    background: var(--surface);
+    font-family: 'DM Mono', monospace;
+    font-size: 0.65rem;
+    color: var(--text-muted);
+    letter-spacing: 0.03em;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  footer a { color: var(--purple-stroke); text-decoration: none; }
+  footer a:hover { text-decoration: underline; }
+
+  @media (max-width: 768px) {
+    .main { grid-template-columns: 1fr; }
+    .sidebar { border-left: none; border-top: 0.5px solid var(--border-strong); }
+    header { padding: 1.5rem; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Vitamin E, Selenium, <em>EDM</em> &amp; <em>NAD</em> in Horses</h1>
+  <p>A first-principles knowledge graph mapping causal assumptions, biomarker validity gaps, and the research agenda for evidence-based testing indications.</p>
+  <div class="byline">James C. Meyer, DVM, MSc (Oxon), DACVIM-LA &nbsp;·&nbsp; VetQuant Consulting &nbsp;·&nbsp; vetquant.com</div>
+</header>
+
+<div class="main">
+  <div class="graph-area">
+    <div class="controls">
+      <span class="controls-label">Filter</span>
+      <button class="filter-btn active" data-cat="all">All nodes</button>
+      <button class="filter-btn" data-cat="disease">Disease entities</button>
+      <button class="filter-btn" data-cat="biomarker">Biomarkers</button>
+      <button class="filter-btn" data-cat="mechanism">Mechanisms</button>
+      <button class="filter-btn" data-cat="evidence">Evidence gaps</button>
+      <button class="filter-btn" data-cat="research">Research studies</button>
+      <button class="filter-btn" data-cat="risk">Risk factors</button>
+    </div>
+    <canvas id="kg-canvas"></canvas>
+    <p class="canvas-hint">Hover nodes for details &nbsp;·&nbsp; Drag to pan &nbsp;·&nbsp; Filter by category above</p>
+  </div>
+
+  <div class="sidebar">
+    <div class="sidebar-section">
+      <h3>Node categories</h3>
+      <div class="legend-item"><div class="legend-dot" style="background:#534AB7;border:1.5px solid #534AB7"></div>Disease entities</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#0F6E56;border:1.5px solid #0F6E56"></div>Biomarkers</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#993C1D;border:1.5px solid #993C1D"></div>Mechanisms</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#854F0B;border:1.5px solid #854F0B"></div>Evidence gaps</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#185FA5;border:1.5px solid #185FA5"></div>Research studies</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#5F5E5A;border:1.5px solid #5F5E5A"></div>Risk factors</div>
+    </div>
+
+    <div class="sidebar-section">
+      <h3>Edge types</h3>
+      <div class="legend-item"><div class="legend-dash solid"></div>Established relationship</div>
+      <div class="legend-item"><div class="legend-dash dashed"></div>Associative / uncertain</div>
+    </div>
+
+    <div id="info-panel">
+      <h3>Selected node</h3>
+      <div id="info-content">
+        <span class="info-default">Hover a node to see its description and relationships.</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <span>VetQuant Consulting &nbsp;·&nbsp; <a href="https://vetquant.com">vetquant.com</a></span>
+  <span>Knowledge graph · Vitamin E &amp; Se in equine medicine</span>
+</footer>
+
+<script>
+const CATS = {
+  disease:   {fill:'#EEEDFE', stroke:'#534AB7', text:'#3C3489', label:'Disease entity'},
+  biomarker: {fill:'#E1F5EE', stroke:'#0F6E56', text:'#085041', label:'Biomarker'},
+  mechanism: {fill:'#FAECE7', stroke:'#993C1D', text:'#712B13', label:'Mechanism'},
+  evidence:  {fill:'#FAEEDA', stroke:'#854F0B', text:'#633806', label:'Evidence gap'},
+  research:  {fill:'#E6F1FB', stroke:'#185FA5', text:'#0C447C', label:'Research study'},
+  risk:      {fill:'#F1EFE8', stroke:'#5F5E5A', text:'#444441', label:'Risk factor'},
+};
+
+const NODES = [
+  {id:'edm',    label:'EDM',                    cat:'disease',   r:30, desc:'Equine degenerative myeloencephalopathy. Progressive symmetric ataxia in young horses of certain breeds. Axonopathy of dorsal spinocerebellar tracts and brainstem nuclei. Topographically selective lesions argue against pure antioxidant failure as the sole mechanism.'},
+  {id:'nad',    label:'NAD',                    cat:'disease',   r:30, desc:'Neuroaxonal dystrophy. Overlapping histopathology with EDM. Likely a disease spectrum rather than a distinct entity. Shared breed and age predisposition. The histological distinction may not reflect separate etiologies.'},
+  {id:'axon',   label:'Axonopathy',             cat:'mechanism', r:24, desc:'Histologically confirmed lesions in dorsal spinocerebellar tracts, cuneate and gracile nuclei, and brainstem. The topographic selectivity is a key clue — diffuse antioxidant failure would not explain why these specific neurons are vulnerable.'},
+  {id:'vitE',   label:'Vit E (α-T)',            cat:'biomarker', r:28, desc:'Serum alpha-tocopherol measures the circulating lipid transport pool at a single moment. It does not measure tissue stores, neuronal concentrations, or spinal cord levels. The 2 µg/mL threshold is derived from population percentiles, not neurological outcome data. Confounded by lipemia and energy balance.'},
+  {id:'se',     label:'Selenium',               cat:'biomarker', r:28, desc:'Whole blood Se integrates status over the 150-day RBC lifespan — the more informative measurement for most purposes. Serum Se is short-term and is a negative acute-phase reactant: it drops with any systemic inflammation regardless of true body stores. Therapeutic window is narrow — toxicity is a real risk above ~0.3 µg/mL.'},
+  {id:'gpx',    label:'GPx activity',           cat:'biomarker', r:22, desc:'Glutathione peroxidase — the functional selenium assay. Answers whether selenium is actually performing its enzymatic role, not just how much is present. The most mechanistically relevant test for NMD and myopathy workup. Consistently underused in equine practice due to sample handling requirements and limited lab availability.'},
+  {id:'oxstress',label:'Oxidative stress',      cat:'mechanism', r:22, desc:'Proposed mechanistic link between low antioxidant status and neuronal injury. Biologically plausible but not confirmed — oxidative stress markers are inconsistent in affected horses and cannot explain the topographic selectivity of lesions.'},
+  {id:'genetics',label:'Genetic susceptibility',cat:'risk',      r:26, desc:'The strongest unexplained signal in EDM/NAD. Breed predisposition persists even at normal serum Vit E levels, making genetics an independent primary variable. Candidate mechanisms include axonal transport genes, mitochondrial function, and lipid peroxidation repair capacity in specific neuron populations. Entirely unexplored at the molecular level.'},
+  {id:'breed',  label:'Breed',                  cat:'risk',      r:22, desc:'Quarter Horse, Warmblood, and Appaloosa are overrepresented. Breed is an independent risk variable not fully explained by differential dietary access to pasture. Serves as a proxy for the underlying genetic susceptibility signal.'},
+  {id:'diet',   label:'Diet / pasture',         cat:'risk',      r:22, desc:'Hay-only diet with no pasture access for more than 3 months is the strongest dietary predictor of Vit E deficiency. Fresh forage is the primary natural source of alpha-tocopherol. Serum Vit E responds to dietary change within days.'},
+  {id:'geo',    label:'Geography (soil Se)',    cat:'risk',      r:22, desc:'USGS soil selenium maps identify low-Se regions across North America. This spatial data has never been formally integrated into an equine clinical prediction rule for testing indication — a tractable and high-impact gap.'},
+  {id:'nmd',    label:'NMD / myopathy',         cat:'disease',   r:24, desc:'White muscle disease and nutritional myodegeneration. The correct diagnostic panel when NMD is suspected is Se + GPx activity — not Vit E alone. Elevated CK and AST are the clinical entry point. Se deficiency is a necessary but the functional GPx assay determines whether the deficiency is biologically significant.'},
+  {id:'repro',  label:'Reproductive failure',   cat:'disease',   r:20, desc:'Selenium deficiency is associated with conception failure and early embryonic loss in mares. A moderate indication for Se testing. The evidence base is thinner than for myopathy, and reproductive failure has many causes — Se testing should be part of a broader workup.'},
+  {id:'threshold',label:'Threshold validity',  cat:'evidence',  r:24, desc:'The 2 µg/mL Vit E cut-point is a population percentile, not a prognostic threshold derived from neurological outcomes. The neurologically protective level may be higher — some referral institutions use >4 µg/mL as a functional target, but this is expert opinion, not a validated cut-point from outcome data.'},
+  {id:'compartment',label:'Compartment validity',cat:'evidence', r:24, desc:'The foundational unresolved question: does serum alpha-tocopherol proxy spinal cord and neuronal alpha-tocopherol concentrations? No systematic paired serum-tissue study with adequate statistical design has been published. If concordance is poor, the entire serum-based testing paradigm requires reconceptualization.'},
+  {id:'apconfound',label:'Acute-phase confounding',cat:'evidence',r:22,desc:'Serum Se drops with any systemic inflammation regardless of true body stores — the mechanism is redistribution of selenoprotein P from plasma to tissues. No existing equine Se study has included concurrent acute-phase markers (SAA, CRP, fibrinogen) as covariates. The entire literature carries this systematic bias, particularly problematic because Se testing most often happens in sick horses.'},
+  {id:'biovar', label:'Biological variation',   cat:'evidence',  r:20, desc:'The natural within-horse variation in Vit E and Se across days and weeks — in the absence of any dietary change — is unknown. Without formal biological variation data (Ricos framework), reference intervals cannot be properly validated, monitoring intervals cannot be rationalized, and true change cannot be distinguished from noise.'},
+  {id:'study1', label:'Serum-tissue concordance',cat:'research', r:22, desc:'Prospective necropsy cohort with pre-euthanasia consent. Paired samples: serum, whole blood, liver, semimembranosus, intercostal muscle, cervical and thoracic dorsal white matter. Statistical framework: Bland-Altman analysis + ICC + proportional bias regression. Target n = 80–120 paired observations. The foundational Layer 1 study.'},
+  {id:'study2', label:'Outcome-anchored RI',    cat:'research',  r:22, desc:'Prospective longitudinal cohort of young horses enriched for at-risk breeds. Serial serum Vit E at 3-month intervals + standardized neurological examination. Cox proportional hazards model with Vit E as time-varying covariate. Restricted cubic spline to characterize dose-response shape and locate the true prognostic threshold.'},
+  {id:'study3', label:'Clinical prediction rule',cat:'research', r:22, desc:'Cross-sectional study, 600–800 horses across ≥4 Se soil zones. Predictor battery: forage type, pasture access, supplementation history, breed, age, sex, BCS, illness history, GPS-linked USGS soil Se zone. LASSO regression → validated scoring tool for pre-test probability. Highest near-term clinical impact.'},
+  {id:'study4', label:'GPx standardization',    cat:'research',  r:20, desc:'Inter-laboratory agreement study for GPx assay across major equine diagnostic laboratories. High feasibility — no longitudinal follow-up required. Would make GPx deployable as a routine clinical test and is a prerequisite for including GPx in any prospective Se study.'},
+  {id:'study5', label:'Test-treatment threshold',cat:'research', r:20, desc:'Formal Pauker-Kassirer decision analysis. For Vit E: empirical supplementation likely rational across most pre-test probabilities given low cost and negligible toxicity risk. For Se: narrow therapeutic window fundamentally changes the threshold calculation — testing before supplementation is warranted across a wider range of probabilities.'},
+];
+
+const EDGES = [
+  {s:'vitE',    t:'edm',           label:'associated with',         dashed:true},
+  {s:'vitE',    t:'nad',           label:'associated with',         dashed:true},
+  {s:'se',      t:'gpx',           label:'substrate for',           dashed:false},
+  {s:'se',      t:'nmd',           label:'deficiency causes',       dashed:false},
+  {s:'se',      t:'repro',         label:'deficiency linked',       dashed:true},
+  {s:'gpx',     t:'nmd',           label:'functional marker of',    dashed:false},
+  {s:'genetics',t:'edm',           label:'primary susceptibility',  dashed:false},
+  {s:'genetics',t:'nad',           label:'primary susceptibility',  dashed:false},
+  {s:'genetics',t:'axon',          label:'mediates vulnerability',  dashed:false},
+  {s:'breed',   t:'genetics',      label:'proxy for',               dashed:true},
+  {s:'diet',    t:'vitE',          label:'determines level',        dashed:false},
+  {s:'geo',     t:'se',            label:'predicts baseline',       dashed:false},
+  {s:'axon',    t:'edm',           label:'defines',                 dashed:false},
+  {s:'axon',    t:'nad',           label:'defines',                 dashed:false},
+  {s:'oxstress',t:'axon',          label:'proposed pathway',        dashed:true},
+  {s:'vitE',    t:'oxstress',      label:'modulates',               dashed:false},
+  {s:'se',      t:'oxstress',      label:'modulates via GPx',       dashed:false},
+  {s:'edm',     t:'nad',           label:'same spectrum?',          dashed:true},
+  {s:'threshold',t:'vitE',         label:'validity gap for',        dashed:false},
+  {s:'compartment',t:'vitE',       label:'validity gap for',        dashed:false},
+  {s:'apconfound',t:'se',          label:'confounds measurement',   dashed:false},
+  {s:'biovar',  t:'vitE',          label:'unknown for',             dashed:false},
+  {s:'biovar',  t:'se',            label:'unknown for',             dashed:false},
+  {s:'study1',  t:'compartment',   label:'closes',                  dashed:false},
+  {s:'study2',  t:'threshold',     label:'closes',                  dashed:false},
+  {s:'study3',  t:'geo',           label:'integrates',              dashed:false},
+  {s:'study4',  t:'gpx',           label:'standardizes',            dashed:false},
+  {s:'study5',  t:'threshold',     label:'formalizes decision',     dashed:false},
+];
+
+const BASE_POSITIONS = {
+  edm:         {x:160, y:105},
+  nad:         {x:310, y:82},
+  axon:        {x:238, y:195},
+  vitE:        {x:108, y:228},
+  se:          {x:452, y:185},
+  gpx:         {x:535, y:278},
+  oxstress:    {x:238, y:300},
+  genetics:    {x:385, y:105},
+  breed:       {x:495, y:82},
+  diet:        {x:58,  y:328},
+  geo:         {x:535, y:155},
+  nmd:         {x:595, y:348},
+  repro:       {x:578, y:438},
+  threshold:   {x:98,  y:408},
+  compartment: {x:225, y:432},
+  apconfound:  {x:388, y:408},
+  biovar:      {x:98,  y:498},
+  study1:      {x:338, y:505},
+  study2:      {x:198, y:522},
+  study3:      {x:468, y:498},
+  study4:      {x:608, y:478},
+  study5:      {x:98,  y:568},
+};
+
+const W = 700, H = 620;
+let pos = {};
+Object.keys(BASE_POSITIONS).forEach(k => { pos[k] = {...BASE_POSITIONS[k]}; });
+
+const canvas = document.getElementById('kg-canvas');
+canvas.width = W;
+canvas.height = H;
+const ctx = canvas.getContext('2d');
+let activeFilter = 'all';
+let hoveredNode = null;
+let drag = null, panX = 0, panY = 0;
+const infoCont = document.getElementById('info-content');
+
+function nodeVisible(n) { return activeFilter === 'all' || n.cat === activeFilter; }
+function edgeVisible(e) {
+  const sn = NODES.find(n=>n.id===e.s), tn = NODES.find(n=>n.id===e.t);
+  return nodeVisible(sn) && nodeVisible(tn);
+}
+
+function draw() {
+  ctx.clearRect(0,0,W,H);
+  ctx.save();
+  ctx.translate(panX, panY);
+
+  EDGES.forEach(e => {
+    if (!edgeVisible(e)) return;
+    const sn = NODES.find(n=>n.id===e.s), tn = NODES.find(n=>n.id===e.t);
+    const sp = pos[e.s], tp = pos[e.t];
+    const dx = tp.x-sp.x, dy = tp.y-sp.y;
+    const dist = Math.sqrt(dx*dx+dy*dy)||1;
+    const ux = dx/dist, uy = dy/dist;
+    const x1 = sp.x+ux*sn.r, y1 = sp.y+uy*sn.r;
+    const x2 = tp.x-ux*(tn.r+6), y2 = tp.y-uy*(tn.r+6);
+    const isHov = hoveredNode && (hoveredNode.id===e.s||hoveredNode.id===e.t);
+    ctx.beginPath();
+    ctx.moveTo(x1,y1);
+    ctx.lineTo(x2,y2);
+    ctx.strokeStyle = isHov ? '#534AB7' : 'rgba(90,86,112,0.22)';
+    ctx.lineWidth = isHov ? 1.5 : 0.8;
+    ctx.setLineDash(e.dashed ? [4,3] : []);
+    ctx.stroke();
+    ctx.setLineDash([]);
+    const angle = Math.atan2(y2-y1, x2-x1);
+    const ax = tp.x - ux*tn.r, ay = tp.y - uy*tn.r;
+    ctx.beginPath();
+    ctx.moveTo(ax, ay);
+    ctx.lineTo(ax-8*Math.cos(angle-0.38), ay-8*Math.sin(angle-0.38));
+    ctx.lineTo(ax-8*Math.cos(angle+0.38), ay-8*Math.sin(angle+0.38));
+    ctx.closePath();
+    ctx.fillStyle = isHov ? '#534AB7' : 'rgba(90,86,112,0.3)';
+    ctx.fill();
+    if (isHov && e.label) {
+      const mx=(x1+x2)/2, my=(y1+y2)/2;
+      ctx.font = '10px "DM Mono", monospace';
+      ctx.fillStyle = '#534AB7';
+      ctx.textAlign = 'center';
+      ctx.fillText(e.label, mx, my-5);
+    }
+  });
+
+  NODES.forEach(n => {
+    if (!nodeVisible(n)) return;
+    const p = pos[n.id];
+    const c = CATS[n.cat];
+    const isHov = hoveredNode && hoveredNode.id===n.id;
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, n.r+(isHov?2:0), 0, Math.PI*2);
+    ctx.fillStyle = c.fill;
+    ctx.fill();
+    ctx.strokeStyle = c.stroke;
+    ctx.lineWidth = isHov ? 2 : 1;
+    ctx.stroke();
+    ctx.fillStyle = c.text;
+    const words = n.label.split(' ');
+    const fs = n.r > 24 ? 11 : 10;
+    ctx.font = `${isHov?'500 ':''}${fs}px "DM Mono", monospace`;
+    ctx.textAlign = 'center';
+    if (words.length <= 2 || n.r < 22) {
+      if (words.length === 1) {
+        ctx.fillText(n.label, p.x, p.y+fs*0.35);
+      } else {
+        ctx.fillText(words[0], p.x, p.y-fs*0.5);
+        ctx.fillText(words.slice(1).join(' '), p.x, p.y+fs*0.9);
+      }
+    } else {
+      const mid = Math.ceil(words.length/2);
+      ctx.fillText(words.slice(0,mid).join(' '), p.x, p.y-fs*0.5);
+      ctx.fillText(words.slice(mid).join(' '), p.x, p.y+fs*0.9);
+    }
+  });
+
+  ctx.restore();
+}
+
+function getNode(cx, cy) {
+  const mx = cx-panX, my = cy-panY;
+  return NODES.find(n => {
+    if (!nodeVisible(n)) return false;
+    const p = pos[n.id];
+    return Math.sqrt((mx-p.x)**2+(my-p.y)**2) <= n.r+5;
+  });
+}
+
+function showInfo(n) {
+  if (!n) {
+    infoCont.innerHTML = '<span class="info-default">Hover a node to see its description and relationships.</span>';
+    return;
+  }
+  const c = CATS[n.cat];
+  const related = EDGES.filter(e => e.s===n.id || e.t===n.id);
+  const relHtml = related.length ? `<div class="related-edges"><h4>Relationships</h4>${
+    related.map(e => {
+      const other = NODES.find(nd => nd.id===(e.s===n.id?e.t:e.s));
+      const dir = e.s===n.id ? '→' : '←';
+      return `<div class="edge-item"><span class="edge-arrow">${dir}</span><span>${other?other.label:''}</span><span class="edge-label">${e.label}</span></div>`;
+    }).join('')
+  }</div>` : '';
+  infoCont.innerHTML = `<span class="node-title">${n.label}</span><span class="node-cat" style="color:${c.stroke}">${c.label}</span>${n.desc}${relHtml}`;
+}
+
+canvas.addEventListener('mousemove', e => {
+  const rect = canvas.getBoundingClientRect();
+  const scaleX = W/rect.width, scaleY = H/rect.height;
+  const cx = (e.clientX-rect.left)*scaleX;
+  const cy = (e.clientY-rect.top)*scaleY;
+  if (drag) {
+    panX = drag.startPanX + (e.clientX-drag.startX);
+    panY = drag.startPanY + (e.clientY-drag.startY);
+    draw(); return;
+  }
+  const n = getNode(cx,cy);
+  if (n !== hoveredNode) { hoveredNode = n||null; draw(); showInfo(hoveredNode); }
+  canvas.style.cursor = n ? 'pointer' : 'grab';
+});
+
+canvas.addEventListener('mousedown', e => {
+  const rect = canvas.getBoundingClientRect();
+  const scaleX = W/rect.width, scaleY = H/rect.height;
+  const cx = (e.clientX-rect.left)*scaleX;
+  const cy = (e.clientY-rect.top)*scaleY;
+  if (!getNode(cx,cy)) {
+    drag = {startX:e.clientX, startY:e.clientY, startPanX:panX, startPanY:panY};
+  }
+});
+
+canvas.addEventListener('mouseup', () => { drag=null; });
+canvas.addEventListener('mouseleave', () => { drag=null; hoveredNode=null; draw(); showInfo(null); });
+
+document.querySelectorAll('.filter-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    activeFilter = btn.dataset.cat;
+    hoveredNode = null;
+    draw();
+    showInfo(null);
+  });
+});
+
+draw();
+</script>
+</body>
+</html>
