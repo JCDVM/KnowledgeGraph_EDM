@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vitamin E & Selenium in Horses — Knowledge Graph | VetQuant</title>
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;1,400&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#f7f5f0;--surface:#ffffff;--border:rgba(60,52,137,0.12);--border-strong:rgba(60,52,137,0.25);--text:#1a1820;--text2:#5a5670;--text3:#9490a8;--purple:#534AB7;--purple-light:#EEEDFE;--purple-dark:#3C3489}
+body{font-family:'EB Garamond',Georgia,serif;background:var(--bg);color:var(--text);min-height:100vh;font-size:16px}
+header{padding:2rem 2.5rem 1.25rem;border-bottom:0.5px solid var(--border-strong);background:var(--surface)}
+header h1{font-size:1.6rem;font-weight:400;letter-spacing:-0.01em;line-height:1.2}
+header h1 em{font-style:italic;color:var(--purple-dark)}
+header p{margin-top:.4rem;font-size:.92rem;color:var(--text2);font-style:italic;max-width:660px;line-height:1.6}
+.byline{margin-top:.8rem;font-family:'DM Mono',monospace;font-size:.65rem;color:var(--text3);letter-spacing:.04em;text-transform:uppercase}
+.byline a{color:var(--purple);text-decoration:none}
+.byline a:hover{text-decoration:underline}
+.main{display:grid;grid-template-columns:1fr 300px;min-height:calc(100vh - 160px)}
+.graph-area{padding:1.25rem}
+.controls{display:flex;gap:6px;align-items:center;margin-bottom:.9rem;flex-wrap:wrap}
+.ctrl-label{font-family:'DM Mono',monospace;font-size:.62rem;text-transform:uppercase;letter-spacing:.08em;color:var(--text3);margin-right:4px}
+.fb{font-family:'DM Mono',monospace;font-size:.62rem;padding:3px 11px;border:0.5px solid var(--border-strong);border-radius:20px;background:transparent;cursor:pointer;color:var(--text2);transition:all .15s}
+.fb:hover{background:var(--purple-light);color:var(--purple-dark);border-color:var(--purple)}
+.fb.on{background:var(--purple);color:#fff;border-color:var(--purple)}
+canvas{display:block;width:100%;border:0.5px solid var(--border);border-radius:8px;background:var(--surface);cursor:grab}
+canvas:active{cursor:grabbing}
+.canvas-hint{font-family:'DM Mono',monospace;font-size:.6rem;color:var(--text3);text-align:center;margin-top:.4rem}
+.sidebar{border-left:0.5px solid var(--border-strong);background:var(--surface);display:flex;flex-direction:column}
+.side-inner{padding:1.1rem;overflow-y:auto;flex:1;max-height:calc(100vh - 220px)}
+.side-inner h2{font-size:.95rem;font-weight:500;color:var(--text);margin-bottom:2px}
+.badge{display:inline-block;font-size:.6rem;padding:2px 8px;border-radius:10px;margin-bottom:5px;font-weight:500;font-family:'DM Mono',monospace}
+.evs{font-size:.65rem;font-weight:500;padding:3px 8px;border-radius:5px;margin-bottom:8px;display:inline-block;font-family:'DM Mono',monospace}
+.ee{background:#E1F5EE;color:#085041}.ea{background:#FAEEDA;color:#633806}.ec{background:#FAECE7;color:#712B13}.eu{background:#F1EFE8;color:#444441}
+.desc{font-size:.82rem;color:var(--text2);line-height:1.65;margin-bottom:8px;font-style:italic}
+.side-inner h3{font-family:'DM Mono',monospace;font-size:.58rem;text-transform:uppercase;letter-spacing:.08em;color:var(--text3);margin:9px 0 5px;font-weight:500}
+.cv-box{background:#FAEEDA;border:0.5px solid #854F0B;border-radius:5px;padding:7px 9px;margin-bottom:7px}
+.cv-title{font-family:'DM Mono',monospace;font-size:.58rem;text-transform:uppercase;color:#633806;font-weight:500;margin-bottom:4px}
+.cv-row{display:flex;justify-content:space-between;font-size:.7rem;color:#712B13;padding:1.5px 0;font-family:'DM Mono',monospace}
+.cv-row span:last-child{font-weight:500}
+.paper{background:var(--bg);border:0.5px solid var(--border);border-radius:5px;padding:7px 9px;margin-bottom:5px}
+.paper-title{font-size:.72rem;font-weight:500;color:var(--text);line-height:1.4;margin-bottom:2px;font-family:'DM Mono',monospace}
+.paper-meta{font-size:.62rem;color:var(--text3);font-family:'DM Mono',monospace}
+.paper-key{font-size:.75rem;color:var(--text2);margin-top:4px;line-height:1.5;font-style:italic}
+.dir-badge{display:inline-block;font-size:.6rem;padding:1px 6px;border-radius:8px;margin:3px 3px 0 0;font-weight:500;font-family:'DM Mono',monospace}
+.ds{background:#E1F5EE;color:#085041}.dc{background:#FAECE7;color:#712B13}.dx{background:#E6F1FB;color:#0C447C}
+.rel-item{font-size:.75rem;color:var(--text2);padding:3px 0;border-bottom:0.5px solid var(--border);display:flex;gap:6px;align-items:baseline}
+.rel-item:last-child{border:none}
+.rel-arrow{color:var(--purple);font-weight:500}
+.rel-lbl{font-size:.62rem;color:var(--text3);margin-left:auto;font-family:'DM Mono',monospace;text-align:right;max-width:110px}
+.default-msg{font-size:.82rem;color:var(--text3);font-style:italic;padding:4px 0}
+.legend{display:flex;gap:12px;flex-wrap:wrap;padding:.7rem 1.1rem;border-top:0.5px solid var(--border-strong);font-size:.7rem;color:var(--text2)}
+.li{display:flex;align-items:center;gap:5px}
+.ld{width:9px;height:9px;border-radius:50%;flex-shrink:0}
+footer{border-top:0.5px solid var(--border-strong);padding:.9rem 2.5rem;background:var(--surface);font-family:'DM Mono',monospace;font-size:.62rem;color:var(--text3);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px}
+footer a{color:var(--purple);text-decoration:none}
+footer a:hover{text-decoration:underline}
+@media(max-width:780px){.main{grid-template-columns:1fr}.sidebar{border-left:none;border-top:0.5px solid var(--border-strong)}.side-inner{max-height:360px}header,footer{padding:1.25rem}}
+</style>
+</head>
+<body>
+<header>
+  <h1>Vitamin E &amp; Selenium in Horses &mdash; <em>A First-Principles Knowledge Graph</em></h1>
+  <p>Mapping causal assumptions, biomarker validity gaps, evidence from the primary literature, and the research agenda for evidence-based testing indications in equine medicine.</p>
+  <div class="byline">James C. Meyer, DVM, MSc (Oxon), DACVIM-LA &nbsp;&middot;&nbsp; VetQuant Consulting &nbsp;&middot;&nbsp; <a href="https://vetquant.com">vetquant.com</a> &nbsp;&middot;&nbsp; Updated April 2026</div>
+</header>
+<div class="main">
+  <div class="graph-area">
+    <div class="controls">
+      <span class="ctrl-label">Filter</span>
+      <button class="fb on" data-cat="all">All nodes</button>
+      <button class="fb" data-cat="disease">Disease</button>
+      <button class="fb" data-cat="biomarker">Biomarkers</button>
+      <button class="fb" data-cat="mechanism">Mechanisms</button>
+      <button class="fb" data-cat="evidence">Evidence gaps</button>
+      <button class="fb" data-cat="research">Research needed</button>
+      <button class="fb" data-cat="risk">Risk factors</button>
+    </div>
+    <canvas id="kg"></canvas>
+    <p class="canvas-hint">Hover nodes for evidence &nbsp;&middot;&nbsp; Drag to pan &nbsp;&middot;&nbsp; Filter by category above</p>
+  </div>
+  <div class="sidebar">
+    <div class="side-inner" id="si">
+      <div class="default-msg">Hover any node to see its description, evidence base, and relationships.</div>
+    </div>
+    <div class="legend">
+      <div class="li"><div class="ld" style="background:#534AB7"></div>Disease</div>
+      <div class="li"><div class="ld" style="background:#0F6E56"></div>Biomarker</div>
+      <div class="li"><div class="ld" style="background:#993C1D"></div>Mechanism</div>
+      <div class="li"><div class="ld" style="background:#854F0B"></div>Evidence gap</div>
+      <div class="li"><div class="ld" style="background:#185FA5"></div>Research needed</div>
+      <div class="li"><div class="ld" style="background:#5F5E5A"></div>Risk factor</div>
+      <div class="li"><svg width="22" height="10"><line x1="0" y1="5" x2="18" y2="5" stroke="#888" stroke-width="1.2"/><polygon points="15,2 19,5 15,8" fill="#888"/></svg>Established</div>
+      <div class="li"><svg width="22" height="10"><line x1="0" y1="5" x2="18" y2="5" stroke="#888" stroke-width="1.2" stroke-dasharray="4 3"/><polygon points="15,2 19,5 15,8" fill="#888"/></svg>Uncertain</div>
+    </div>
+  </div>
+</div>
+<footer>
+  <span>VetQuant Consulting &nbsp;&middot;&nbsp; <a href="https://vetquant.com">vetquant.com</a> &nbsp;&middot;&nbsp; James C. Meyer DVM MSc DACVIM-LA</span>
+  <span>Vitamin E &amp; Se Equine Knowledge Graph &nbsp;&middot;&nbsp; April 2026</span>
+</footer>
+<script>
+const C={disease:{fill:'#EEEDFE',stroke:'#534AB7',text:'#3C3489',label:'Disease entity'},biomarker:{fill:'#E1F5EE',stroke:'#0F6E56',text:'#085041',label:'Biomarker'},mechanism:{fill:'#FAECE7',stroke:'#993C1D',text:'#712B13',label:'Mechanism'},evidence:{fill:'#FAEEDA',stroke:'#854F0B',text:'#633806',label:'Evidence gap'},research:{fill:'#E6F1FB',stroke:'#185FA5',text:'#0C447C',label:'Research needed'},risk:{fill:'#F1EFE8',stroke:'#5F5E5A',text:'#444441',label:'Risk factor'}};
+const R={palmisano2025:{title:'Palmisano et al. 2025 — JAVMA 263:604',meta:'Palmisano MG, Colmer SF et al. · New Bolton Center · doi:10.2460/javma.24.09.0590',key:'16.5% of adult emergency admissions deficient. HPLC analytical CV 20%. Hospitalization did not reduce VitE (P=.85). Ataxic horses (n=3) all had adequate VitE (3.1-5.0 µg/mL). Lipemia (TG 1,188 mg/dL) produced spurious VitE 20 µg/mL — confound directly demonstrated.'},higgins2008:{title:'Higgins et al. 2008 — AJVR 69:785',meta:'Higgins JK, Puschner B, Kass PH, Pusterla N · Am J Vet Res',key:'Analytical CV 10.9% serum; 13.4% CSF. Serum-CSF correlation lost after 10d supplementation (P=0.30). CSF equilibration may take >600 days.'},craig1989:{title:'Craig et al. 1989 — AJVR 50:1527',meta:'Craig AM, Blythe LL, Lassen ED et al. · Am J Vet Res',key:'Within-individual biological CV 12% over 72h. Serum approx 1% of total body alpha-tocopherol. Serum fluctuations do not affect tissue concentrations.'},craig1992:{title:'Craig et al. 1992 — AJVR 53:2228',meta:'Craig AM, Blythe LL, Rowe KE et al. · Am J Vet Res',key:'Pre-analytical variation: light, rubber, hemolysis, heat degrade alpha-tocopherol. Adds an unmeasured third CV component to clinical measurements.'},pusterla2015:{title:'Pusterla et al. 2015 — JVIM · PMID 27751910',meta:'Pusterla N et al. · J Vet Intern Med',key:'Serum correlates with CSF and hepatic VitE in horses. Spinal cord exception — high CNS fat content makes measurement unreliable. Compartment validity partially supported.'},schryver1983:{title:'Schryver & Hintz 1983 / Hintz 1994',meta:'Current Therapy Equine Med · J Nutr 124(suppl)',key:'Original source of 2 µg/mL threshold. Derived from population distributions in healthy horses — not from neurological outcome data. A normative, not prognostic, reference interval.'},crossspecies:{title:'Cross-species eNAD/EDM studies (x4)',meta:'PMIDs: 9194904 · 10727494 · 7453784 · 7463101',key:'Consistent phenotype and histopathological lesions produced by VitE deficiency across multiple species. Satisfies Bradford Hill criteria for consistency and analogy.'},spectrum:{title:'eNAD/EDM spectrum papers',meta:'JVIM doi:10.1111/jvim.12015 · PMID 21916766',key:'eNAD and EDM confirmed as the same disease on a spectrum. Histological distinction does not reflect separate etiologies.'},prevention:{title:'Supplementation prevention studies',meta:'PMIDs: 3506620 · 21916766',key:'VitE supplementation before disease onset reduces incidence in susceptible herds. Affected horses stabilize with or without VitE — preventive role confirmed, therapeutic role absent.'},roneus1986:{title:'Roneus et al. 1986 — Equine Vet J 18:50',meta:'Roneus BO, Hakkarainen RVJ, Lindholm CA et al.',key:'Muscle concentrations rise slowly and remain elevated >7 weeks post-cessation. Serum and tissue kinetics are fundamentally decoupled. Cited by Palmisano 2025 as proxy support — a misapplication.'},muirhead2010:{title:'Muirhead et al. 2010 — Can Vet J 51:979',meta:'Muirhead TL, Wichtel JJ, Stryhn H, McClure JT · Prince Edward Island',key:'13% of mares and foals deficient in Atlantic Canada. Low-Se soil zones identified. Closest published regional reference to Quebec.'},donnelly2023:{title:'Donnelly & Finno 2023 — Equine Vet J 55:884',meta:'Donnelly CG, Finno CJ · doi:10.1111/evj.13907',key:'VitE depletion associated with subclinical axonal degeneration in juvenile horses before clinical signs appear. Prevention window is narrow.'},finno2012:{title:'Finno & Valberg 2012 — JVIM 26:1251',meta:'Finno CJ, Valberg SJ · doi:10.1111/j.1939-1676.2012.00994.x',key:'Comprehensive review of VitE and equine disorders. Genetic susceptibility and early-life deficiency identified as primary risk factors for eNAD/EDM.'}};
+const N=[
+{id:'edm',cat:'disease',r:30,label:'eNAD/EDM',status:'associated',desc:'Progressive symmetric ataxia in young horses. Axonopathy of dorsal spinocerebellar tracts and brainstem confirmed histologically. Same disease on a spectrum. Three ataxic horses in Palmisano 2025 had adequate VitE (3.1-5.0 µg/mL) — deficiency not required for phenotype.',cvData:null,papers:[{id:'spectrum',dir:'s',note:'Same disease confirmed across spectrum'},{id:'crossspecies',dir:'s',note:'Cross-species causal plausibility strengthened'},{id:'prevention',dir:'x',note:'Preventable before onset; not treatable after'},{id:'palmisano2025',dir:'x',note:'Ataxic horses VitE 3.1-5.0 above threshold'},{id:'donnelly2023',dir:'s',note:'Subclinical axonal damage precedes clinical detection'},{id:'finno2012',dir:'x',note:'Genetic susceptibility and early-life deficiency are primary risks'}]},
+{id:'vitE',cat:'biomarker',r:30,label:'Serum VitE',status:'contested',desc:'Measures circulating lipid transport pool only. Serum approx 1% of total body alpha-tocopherol. Analytical CV: 20% (Palmisano 2025) or 10.9% (Higgins 2008) depending on lab. Combined worst-case CV ~23.3%. 95% uncertainty at 2 µg/mL spans 1.1-2.9 µg/mL. Lipemia directly demonstrated to inflate values spuriously.',cvData:{ana:'20% (Palmisano) / 10.9% (Higgins)',bio:'12% over 72h (Craig 1989)',comb:'~23.3% worst case',unc:'1.1-2.9 µg/mL at 2 µg/mL (95% CI)'},papers:[{id:'palmisano2025',dir:'c',note:'Analytical CV 20%; lipemia confound demonstrated'},{id:'higgins2008',dir:'c',note:'CV 10.9%; serum-CSF correlation lost after supplementation'},{id:'craig1989',dir:'c',note:'Biological CV 12%; serum = ~1% body stores'},{id:'craig1992',dir:'c',note:'Pre-analytical variation: third unmeasured CV component'},{id:'schryver1983',dir:'x',note:'Source of 2 µg/mL threshold — normative not prognostic'}]},
+{id:'csf',cat:'biomarker',r:22,label:'CSF alpha-T',status:'associated',desc:'Correlates with serum at baseline but correlation disappears after 10 days of supplementation (Higgins 2008). Equilibration may take >600 days. Rostral-to-caudal gradient uncharacterized in horses. Atlanto-occipital sampling may not reflect thoracolumbar concentrations where EDM lesions are most prominent.',cvData:null,papers:[{id:'higgins2008',dir:'s',note:'Baseline correlation P=0.05; lost at day 10 P=0.30'},{id:'pusterla2015',dir:'s',note:'Serum correlates with CSF and liver in horses'}]},
+{id:'threshold',cat:'evidence',r:24,label:'2 µg/mL threshold',status:'contested',desc:'Derived from population percentile distributions in healthy horses — not from neurological outcome data. With combined CV ~23%, threshold sits within measurement noise. Some institutions use >4 µg/mL for high-demand horses. Foal thresholds are age-specific but acknowledged as poorly defined in the literature.',cvData:null,papers:[{id:'schryver1983',dir:'x',note:'Original source — normative not prognostic'},{id:'palmisano2025',dir:'c',note:'Foal thresholds acknowledged as poorly defined'},{id:'higgins2008',dir:'c',note:'CV ~20% makes threshold unreliable near cutpoint'},{id:'craig1989',dir:'c',note:'Serum = ~1% body stores; decoupled from tissue'}]},
+{id:'compartment',cat:'evidence',r:24,label:'Compartment validity',status:'contested',desc:'Serum correlates with CSF and liver (Pusterla 2015) but NOT spinal cord — the tissue most relevant to EDM. Serum-CSF correlation lost after supplementation, making serum worst as a monitoring tool precisely when used most. Palmisano 2025 cites Roneus 1986 to justify serum as proxy — but Roneus 1986 demonstrates kinetic decoupling.',cvData:null,papers:[{id:'pusterla2015',dir:'x',note:'CSF and liver concordance confirmed; spinal cord gap'},{id:'higgins2008',dir:'c',note:'Correlation lost after supplementation'},{id:'craig1989',dir:'c',note:'Serum fluctuations do not affect tissue'},{id:'palmisano2025',dir:'x',note:'Cites Roneus 1986 for proxy support — misapplication'},{id:'roneus1986',dir:'c',note:'Muscle kinetics decoupled from serum'}]},
+{id:'biovar',cat:'evidence',r:22,label:'Biological variation',status:'unknown',desc:'Within-horse CV 12% over 72h (Craig 1989) is the only published equine data. Longer-term biological variation across weeks to months is entirely unpublished. Without a formal Ricos-framework biological variation study, reference intervals cannot be validated and monitoring intervals cannot be rationalized.',cvData:{ana:'20% (Palmisano) / 10.9% (Higgins)',bio:'12% / 72h only (Craig 1989)',comb:'23.3% worst case',unc:'Longer-term BV completely unknown'},papers:[{id:'craig1989',dir:'x',note:'Only published within-horse CV — 72h window only'},{id:'higgins2008',dir:'x',note:'Individual variation recognized; cites Craig 1989'}]},
+{id:'lipemia',cat:'evidence',r:22,label:'Lipemia confound',status:'established',desc:'Hypertriglyceridemia directly demonstrated to inflate serum VitE in horses (Palmisano 2025): TG 1,188 mg/dL produced VitE 20 µg/mL. HPLC measurement in lipemic samples is unreliable. Most critical in metabolic horses (EMS/PPID) — the population most at risk of both VitE deficiency AND hyperlipidemia.',cvData:null,papers:[{id:'palmisano2025',dir:'s',note:'TG 1,188 mg/dL produced VitE 20 µg/mL directly'},{id:'craig1989',dir:'x',note:'Serum lipid concentration confounds alpha-tocopherol'}]},
+{id:'prevalence',cat:'evidence',r:22,label:'Prevalence data',status:'established',desc:'16.5% of adult horses deficient at emergency admission in a good-pasture mid-Atlantic region (Palmisano 2025). 13% of mares and foals deficient in Atlantic Canada (Muirhead 2010). Authors of Palmisano 2025 explicitly state deficiency rates are likely higher in regions with minimal pasture access — directly implicating Quebec and winter-managed horse populations.',cvData:null,papers:[{id:'palmisano2025',dir:'s',note:'16.5% adult deficiency — good-pasture region'},{id:'muirhead2010',dir:'s',note:'13% deficiency — Atlantic Canada mares and foals'}]},
+{id:'genetics',cat:'risk',r:26,label:'Genetic susceptibility',status:'associated',desc:'Breed predisposition persists even at normal serum VitE levels — genetics is an independent primary risk variable. Quarter Horse, Warmblood, Appaloosa overrepresented. Entirely unexplored at the molecular level. Candidate mechanisms: axonal transport genes, mitochondrial function, lipid peroxidation repair capacity.',cvData:null,papers:[{id:'spectrum',dir:'x',note:'Breed predisposition consistent across eNAD/EDM spectrum'},{id:'finno2012',dir:'x',note:'Genetic susceptibility reviewed as primary risk factor'},{id:'crossspecies',dir:'x',note:'Cross-species model does not explain breed selectivity'}]},
+{id:'axon',cat:'mechanism',r:22,label:'Axonopathy',status:'established',desc:'Histologically confirmed lesions in dorsal spinocerebellar tracts, cuneate and gracile nuclei, brainstem. Topographic selectivity argues against diffuse antioxidant failure — specific neurons are selectively vulnerable. Subclinical degeneration occurs before clinical signs (Donnelly & Finno 2023).',cvData:null,papers:[{id:'spectrum',dir:'s',note:'Lesion distribution consistent across spectrum'},{id:'crossspecies',dir:'s',note:'Same lesions reproduced by VitE deficiency cross-species'},{id:'donnelly2023',dir:'s',note:'Subclinical damage precedes clinical detection'}]},
+{id:'oxstress',cat:'mechanism',r:20,label:'Oxidative stress',status:'contested',desc:'Proposed causal link between low VitE and selective neuronal injury. Biologically plausible but unconfirmed — oxidative markers inconsistent in affected horses. Topographic selectivity of lesions cannot be explained by diffuse oxidative stress. TTPA knockout mouse model under active investigation.',cvData:null,papers:[{id:'crossspecies',dir:'x',note:'Cross-species model broadly supports antioxidant role'},{id:'finno2012',dir:'x',note:'Oxidative mechanism reviewed — acknowledged as unconfirmed'}]},
+{id:'metabolic',cat:'risk',r:26,label:'Metabolic horse (EMS/PPID)',status:'associated',desc:'Permanent pasture restriction creates structural chronic VitE deficiency risk. Hypertriglyceridemia inflates apparent serum VitE (Palmisano 2025) — making assay least reliable in the population most at risk. Oxidative stress from insulin dysregulation may accelerate alpha-tocopherol utilization. Concurrent lipid panel essential before interpreting VitE results in this population.',cvData:null,papers:[{id:'palmisano2025',dir:'c',note:'Lipemia inflates VitE — confound highest in metabolic horses'},{id:'higgins2008',dir:'x',note:'10-day serum plateau useful for absorption verification'},{id:'craig1989',dir:'x',note:'Serum = ~1% body stores; critical in high-demand state'}]},
+{id:'quebec',cat:'risk',r:22,label:'Quebec / northern Canada',status:'unknown',desc:'No published VitE or Se prevalence study for Quebec horses. Structural risk: 5-6 month hay-only winter season is the norm. Canadian Shield and St. Lawrence Lowlands soil Se is highly variable with documented low-Se zones. Muirhead 2010 (PEI) is the closest regional reference. Palmisano 2025 authors predict higher deficiency in low-pasture regions — Quebec is the clearest uncharacterized high-risk population.',cvData:null,papers:[{id:'muirhead2010',dir:'x',note:'Closest regional data — PEI; 13% deficiency rate'},{id:'palmisano2025',dir:'x',note:'Authors predict higher deficiency in low-pasture regions'}]},
+{id:'suppkin',cat:'mechanism',r:22,label:'Supplementation kinetics',status:'established',desc:'Serum rises within 3-6 days and plateaus within 10 days of oral supplementation (Higgins 2008). Returns to baseline within 10-20 days of stopping. Muscle concentrations lag serum and remain elevated >7 weeks post-cessation (Roneus 1986). CSF equilibration may take >600 days. Serum and tissue kinetics are fundamentally decoupled.',cvData:null,papers:[{id:'higgins2008',dir:'s',note:'Serum plateau day 10; washout complete day 20'},{id:'roneus1986',dir:'s',note:'Muscle kinetics lag serum; elevated >7 weeks after stopping'}]},
+{id:'monitoring',cat:'research',r:24,label:'Monitoring protocol',status:'unknown',desc:'No published evidence-based monitoring frequency for any equine population. Rational framework: (1) Baseline before supplementation. (2) Retest 3-4 weeks to confirm absorption. (3) Retest 3-4 months for stability. (4) Annual if stable. Target >4 µg/mL in metabolic and high-demand horses. Always obtain concurrent lipid panel in metabolic horses. Within-horse trajectory more informative than single threshold comparison.',cvData:null,papers:[{id:'higgins2008',dir:'x',note:'10-day plateau informs earliest informative retest'},{id:'palmisano2025',dir:'x',note:'Admission VitE reflects dietary baseline'},{id:'schryver1983',dir:'c',note:'2 µg/mL threshold likely inadequate for high-demand horses'}]},
+{id:'prevention2',cat:'mechanism',r:22,label:'Prevention vs treatment',status:'established',desc:'VitE supplementation before disease onset reduces incidence in susceptible herds. Affected horses stabilize with or without VitE — supplementation does not treat established disease. Subclinical axonal degeneration occurs before clinical signs (Donnelly 2023), making early prevention the only effective intervention window.',cvData:null,papers:[{id:'prevention',dir:'s',note:'Prevention confirmed; no therapeutic effect established'},{id:'donnelly2023',dir:'s',note:'Subclinical damage before signs — prevention window narrow'},{id:'spectrum',dir:'s',note:'Stabilization occurs regardless of supplementation'}]},
+{id:'study1',cat:'research',r:22,label:'Serum-tissue concordance',status:'unknown',desc:'Needed: prospective necropsy cohort with paired samples from serum, whole blood, liver, muscle, and spinal cord. Bland-Altman + ICC + proportional bias regression. Target n=80-120. Foundational Layer 1 study — must precede outcome-anchored reference intervals. Spinal cord is the critical unresolved compartment.',cvData:null,papers:[{id:'pusterla2015',dir:'x',note:'CSF and liver concordance published; spinal cord gap remains'},{id:'craig1989',dir:'x',note:'Tissue decoupling from serum motivates this study'}]},
+{id:'study2',cat:'research',r:20,label:'Outcome-anchored RI',status:'unknown',desc:'Needed: prospective longitudinal cohort of at-risk breed horses with serial serum VitE and standardized neurological examination as outcome. Cox model with VitE as time-varying covariate, restricted cubic spline. Would replace population-percentile threshold with a true prognostic cut-point.',cvData:null,papers:[{id:'schryver1983',dir:'c',note:'Current threshold this study would replace'},{id:'donnelly2023',dir:'x',note:'Subclinical endpoint could be incorporated as early outcome'}]},
+{id:'study3',cat:'research',r:22,label:'Quebec/Canada prevalence study',status:'unknown',desc:'Needed: cross-sectional study of VitE and Se status in Quebec and eastern Canadian horses across soil Se zones and seasonal feeding patterns. GIS-linked to Canadian soil Se maps. LASSO regression for regional clinical prediction rule. Fills the most significant geographic gap in current prevalence data.',cvData:null,papers:[{id:'muirhead2010',dir:'x',note:'PEI data is the only Atlantic Canada reference — Quebec unstudied'},{id:'palmisano2025',dir:'x',note:'Mid-Atlantic baseline for comparison'}]}
+];
+
+const E=[
+{s:'vitE',t:'edm',label:'associated not causal',d:true},
+{s:'genetics',t:'edm',label:'primary susceptibility',d:false},
+{s:'axon',t:'edm',label:'defines',d:false},
+{s:'oxstress',t:'axon',label:'proposed pathway',d:true},
+{s:'vitE',t:'oxstress',label:'modulates',d:false},
+{s:'threshold',t:'vitE',label:'validity gap',d:false},
+{s:'compartment',t:'vitE',label:'validity gap',d:false},
+{s:'biovar',t:'vitE',label:'CV unknown beyond 72h',d:false},
+{s:'lipemia',t:'vitE',label:'inflates measurement',d:false},
+{s:'csf',t:'vitE',label:'proxy at baseline only',d:true},
+{s:'metabolic',t:'vitE',label:'chronic low intake',d:false},
+{s:'metabolic',t:'lipemia',label:'elevated TG risk',d:false},
+{s:'metabolic',t:'monitoring',label:'drives need for',d:false},
+{s:'suppkin',t:'monitoring',label:'informs timing',d:false},
+{s:'suppkin',t:'vitE',label:'kinetics of',d:false},
+{s:'prevention2',t:'edm',label:'preventable not treatable',d:false},
+{s:'vitE',t:'prevention2',label:'preventive role',d:false},
+{s:'prevalence',t:'vitE',label:'real-world deficiency rate',d:false},
+{s:'quebec',t:'prevalence',label:'gap in data',d:true},
+{s:'study1',t:'compartment',label:'closes',d:false},
+{s:'study2',t:'threshold',label:'closes',d:false},
+{s:'study3',t:'quebec',label:'closes',d:false},
+{s:'genetics',t:'axon',label:'mediates vulnerability',d:false}
+];
+
+const P={edm:{x:175,y:92},vitE:{x:115,y:232},csf:{x:260,y:152},threshold:{x:72,y:372},compartment:{x:218,y:402},biovar:{x:72,y:460},lipemia:{x:205,y:480},prevalence:{x:348,y:478},genetics:{x:368,y:92},axon:{x:276,y:208},oxstress:{x:276,y:318},metabolic:{x:450,y:208},suppkin:{x:450,y:328},monitoring:{x:450,y:445},prevention2:{x:358,y:388},quebec:{x:560,y:432},study1:{x:560,y:308},study2:{x:560,y:368},study3:{x:560,y:492}};
+
+const EV=E.filter(e=>P[e.s]&&P[e.t]);
+const W=700,H=560;
+const cv=document.getElementById('kg');
+cv.width=W;cv.height=H;
+const ctx=cv.getContext('2d');
+let filter='all',hov=null,drag=null,panX=0,panY=0;
+function vis(n){return filter==='all'||n.cat===filter;}
+function evis(e){const s=N.find(n=>n.id===e.s),t=N.find(n=>n.id===e.t);return s&&t&&vis(s)&&vis(t);}
+function draw(){
+  ctx.clearRect(0,0,W,H);ctx.save();ctx.translate(panX,panY);
+  EV.forEach(e=>{
+    if(!evis(e))return;
+    const sn=N.find(n=>n.id===e.s),tn=N.find(n=>n.id===e.t);
+    const sp=P[e.s],tp=P[e.t];
+    const dx=tp.x-sp.x,dy=tp.y-sp.y,dist=Math.sqrt(dx*dx+dy*dy)||1;
+    const ux=dx/dist,uy=dy/dist;
+    const x1=sp.x+ux*sn.r,y1=sp.y+uy*sn.r,x2=tp.x-ux*(tn.r+5),y2=tp.y-uy*(tn.r+5);
+    const ih=hov&&(hov.id===e.s||hov.id===e.t);
+    ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x2,y2);
+    ctx.strokeStyle=ih?'#534AB7':'rgba(100,96,120,0.18)';ctx.lineWidth=ih?1.8:0.7;
+    ctx.setLineDash(e.d?[4,3]:[]);ctx.stroke();ctx.setLineDash([]);
+    const ang=Math.atan2(y2-y1,x2-x1),ax=tp.x-ux*tn.r,ay=tp.y-uy*tn.r;
+    ctx.beginPath();ctx.moveTo(ax,ay);
+    ctx.lineTo(ax-8*Math.cos(ang-.38),ay-8*Math.sin(ang-.38));
+    ctx.lineTo(ax-8*Math.cos(ang+.38),ay-8*Math.sin(ang+.38));
+    ctx.closePath();ctx.fillStyle=ih?'#534AB7':'rgba(100,96,120,0.28)';ctx.fill();
+    if(ih&&e.label){const mx=(x1+x2)/2,my=(y1+y2)/2;ctx.font='10px "DM Mono",monospace';ctx.fillStyle='#534AB7';ctx.textAlign='center';ctx.fillText(e.label,mx,my-5);}
+  });
+  N.forEach(n=>{
+    if(!vis(n)||!P[n.id])return;
+    const p=P[n.id],c=C[n.cat],ih=hov&&hov.id===n.id;
+    ctx.beginPath();ctx.arc(p.x,p.y,n.r+(ih?2:0),0,Math.PI*2);
+    ctx.fillStyle=c.fill;ctx.fill();ctx.strokeStyle=c.stroke;ctx.lineWidth=ih?2:0.8;ctx.stroke();
+    ctx.fillStyle=c.text;
+    const words=n.label.split(' '),fs=n.r>24?11:10;
+    ctx.font=(ih?'500 ':'')+fs+'px "DM Mono",monospace';ctx.textAlign='center';
+    if(words.length===1)ctx.fillText(n.label,p.x,p.y+fs*0.35);
+    else if(words.length===2){ctx.fillText(words[0],p.x,p.y-fs*0.5);ctx.fillText(words[1],p.x,p.y+fs*0.85);}
+    else{const mid=Math.ceil(words.length/2);ctx.fillText(words.slice(0,mid).join(' '),p.x,p.y-fs*0.5);ctx.fillText(words.slice(mid).join(' '),p.x,p.y+fs*0.85);}
+  });
+  ctx.restore();
+}
+const SL={established:'ee',associated:'ea',contested:'ec',unknown:'eu'};
+const SN={established:'Established',associated:'Association — not causal',contested:'Contested — evidence conflicts',unknown:'Unknown — evidence gap'};
+const DN={s:'ds',c:'dc',x:'dx'};const DL={s:'supports',c:'challenges',x:'context'};
+function showPanel(n){
+  const si=document.getElementById('si');
+  if(!n){si.innerHTML='<div class="default-msg">Hover any node to see its description, evidence base, and relationships.</div>';return;}
+  const c=C[n.cat];
+  let h=`<h2>${n.label}</h2><span class="badge" style="background:${c.fill};color:${c.text}">${c.label}</span><br><span class="evs ${SL[n.status]||'eu'}">${SN[n.status]||n.status}</span><div class="desc">${n.desc}</div>`;
+  if(n.cvData)h+=`<div class="cv-box"><div class="cv-title">Measurement variability</div><div class="cv-row"><span>Analytical CV</span><span>${n.cvData.ana}</span></div><div class="cv-row"><span>Biological CV</span><span>${n.cvData.bio}</span></div><div class="cv-row"><span>Combined worst case</span><span>${n.cvData.comb}</span></div><div class="cv-row"><span>95% range at 2 µg/mL</span><span>${n.cvData.unc}</span></div></div>`;
+  if(n.papers&&n.papers.length){
+    h+=`<h3>Evidence — ${n.papers.length} source${n.papers.length>1?'s':''}</h3>`;
+    n.papers.forEach(p=>{const r=R[p.id];if(!r)return;const k=r.key.length>110?r.key.substring(0,110)+'...':r.key;h+=`<div class="paper"><div class="paper-title">${r.title}</div><div class="paper-meta">${r.meta}</div><span class="dir-badge ${DN[p.dir]}">${DL[p.dir]}</span><div class="paper-key">${p.note} — ${k}</div></div>`;});
+  }
+  const rels=EV.filter(e=>(e.s===n.id||e.t===n.id)&&evis(e));
+  if(rels.length){h+=`<h3>Relationships</h3>`;rels.forEach(e=>{const other=N.find(x=>x.id===(e.s===n.id?e.t:e.s));if(!other)return;h+=`<div class="rel-item"><span class="rel-arrow">${e.s===n.id?'&rarr;':'&larr;'}</span><span>${other.label}</span><span class="rel-lbl">${e.label}</span></div>`;});}
+  si.innerHTML=h;
+}
+function getNode(cx,cy){const mx=cx-panX,my=cy-panY;return N.find(n=>{if(!vis(n)||!P[n.id])return false;const p=P[n.id];return Math.sqrt((mx-p.x)**2+(my-p.y)**2)<=n.r+5;});}
+cv.addEventListener('mousemove',e=>{
+  const r=cv.getBoundingClientRect(),sx=W/r.width;
+  const cx=(e.clientX-r.left)*sx,cy=(e.clientY-r.top)*sx;
+  if(drag){panX=drag.px+(e.clientX-drag.x);panY=drag.py+(e.clientY-drag.y);draw();return;}
+  const n=getNode(cx,cy);if(n!==hov){hov=n||null;draw();showPanel(hov);}
+  cv.style.cursor=n?'pointer':'grab';
+});
+cv.addEventListener('mousedown',e=>{
+  const r=cv.getBoundingClientRect(),sx=W/r.width;
+  const cx=(e.clientX-r.left)*sx,cy=(e.clientY-r.top)*sx;
+  if(!getNode(cx,cy))drag={x:e.clientX,y:e.clientY,px:panX,py:panY};
+});
+cv.addEventListener('mouseup',()=>{drag=null;});
+cv.addEventListener('mouseleave',()=>{drag=null;hov=null;draw();showPanel(null);});
+document.querySelectorAll('.fb').forEach(b=>{b.addEventListener('click',()=>{document.querySelectorAll('.fb').forEach(x=>x.classList.remove('on'));b.classList.add('on');filter=b.dataset.cat;hov=null;draw();showPanel(null);});});
+draw();
+</script>
+</body>
+</html>
